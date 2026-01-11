@@ -117,23 +117,70 @@ class AIImageGenerator:
         #     "Similar to popular Telegram channel previews - clean but attention-grabbing. "
         # )
         base_prompt = (
-            "Generate a highly engaging, meme-style illustration for a Telegram channel post preview. "
-            "Style: realistic, cinematic look with real human characters (photorealistic or semi-photorealistic). "
-            "Humor: subtle, clever, situational humor — expressive facial emotions, ironic or relatable moments. "
-            "People should look natural and believable, not cartoonish. "
-            "Composition: dynamic, close-up or medium shot, strong focus on emotions and reactions. "
-            "Mood: light, playful, witty, slightly ironic — like a smart visual joke. "
-            "Use natural lighting, depth of field, and realistic textures. "
-            "Bright but not oversaturated colors, modern aesthetic. "
-            "NO TEXT, NO LETTERS, NO WORDS in the image — humor must be purely visual. "
-            "The image should instantly tell a funny or relatable story without explanation. "
-            "Perfect for a viral Telegram channel preview: clean, modern, emotionally engaging, and memorable."
+            "Create a MEME-STYLE visual for Telegram post - should look like a reaction meme or internet culture reference. "
+            "Style: Choose ONE of these approaches that fits the topic best: "
+            "1) Famous movie/TV scene recreation (like popular meme templates) "
+            "2) Exaggerated facial expression or reaction shot (close-up, dramatic) "
+            "3) Absurd/surreal situation that makes people laugh "
+            "4) 'That moment when...' relatable situation "
+            "Requirements: "
+            "- Must be INSTANTLY recognizable as a meme, not a stock photo "
+            "- Focus on ONE strong emotion or reaction (shock, confusion, joy, despair, etc) "
+            "- Exaggerate the emotion - make it dramatic and memorable "
+            "- Use unusual angles, dramatic lighting, or cinematic framing "
+            "- The image should make people SMILE or LAUGH immediately "
+            "- Avoid generic corporate/business stock photo aesthetics "
+            "- NO TEXT, NO LETTERS, NO WORDS - only pure visual humor "
+            "- Should work WITHOUT context but become perfect WITH the post title "
+            "Think: popular Russian/internet memes, reaction images, cultural references. "
+            "Make it SHAREABLE, RELATABLE, and MEMEABLE."
         )
+
+        # Добавляем контекст для более мемного результата
+        context_hint = self._get_meme_context_hint(title, description)
 
         # Добавляем тему из заголовка и описания
         if description:
-            prompt = f"{base_prompt}Topic: {title}. Context: {description}"
+            prompt = f"{base_prompt}\n\n{context_hint}\n\nTopic: {title}. Context: {description}"
         else:
-            prompt = f"{base_prompt}Topic: {title}"
+            prompt = f"{base_prompt}\n\n{context_hint}\n\nTopic: {title}"
 
         return prompt
+
+    def _get_meme_context_hint(self, title: str, description: str = None) -> str:
+        """
+        Подсказка для AI на основе контекста поста
+
+        Args:
+            title: Заголовок поста
+            description: Описание поста
+
+        Returns:
+            Подсказка для стиля мема
+        """
+        text = (title + " " + (description or "")).lower()
+
+        # Определяем тип эмоции/ситуации
+        if any(word in text for word in ["не получается", "провал", "ошибка", "упала", "падает", "кризис"]):
+            return "Suggested meme style: Disappointed/frustrated reaction. Think: facepalm, head in hands, 'why me' expression."
+
+        elif any(word in text for word in ["успех", "получилось", "победа", "рост", "выиграл"]):
+            return "Suggested meme style: Victory/celebration reaction. Think: triumphant pose, happy dance, 'yes!' moment."
+
+        elif any(word in text for word in ["удивительно", "неожиданно", "шок", "wow", "офигеть"]):
+            return "Suggested meme style: Shocked/surprised reaction. Think: wide eyes, dropped jaw, pointing at something."
+
+        elif any(word in text for word in ["думаю", "размышление", "вопрос", "как", "почему"]):
+            return "Suggested meme style: Thinking/confused reaction. Think: scratching head, looking puzzled, contemplating."
+
+        elif any(word in text for word in ["работа", "офис", "начальник", "коллеги", "совещание"]):
+            return "Suggested meme style: Office/work situation. Think: office worker's relatable moment, meeting scene, desk drama."
+
+        elif any(word in text for word in ["деньги", "продаж", "клиент", "бизнес", "прибыль"]):
+            return "Suggested meme style: Money/business related. Think: counting money, empty wallet, negotiation scene."
+
+        elif any(word in text for word in ["учимся", "обучение", "новое", "не знал", "узнал"]):
+            return "Suggested meme style: Learning/discovery moment. Think: 'aha!' moment, mind blown, taking notes intensely."
+
+        else:
+            return "Suggested meme style: Universal relatable reaction. Make it expressive and dramatic."
