@@ -1,0 +1,34 @@
+# Environment
+.env
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*test_*
+
+# Temporary files
+temp/
+*.tmp
+
+# IDE
+.vscode/
+.claude/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output
+output/
+*.png
+*.jpg
+*.jpeg

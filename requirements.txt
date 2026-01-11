@@ -1,0 +1,13 @@
+# Telegram Bot
+python-telegram-bot>=21.0
+
+# Image processing
+opencv-python==4.10.0.84
+numpy>=1.26.0
+Pillow>=10.0.0
+
+# HTTP requests
+requests==2.31.0
+
+# Configuration
+python-dotenv==1.0.0
