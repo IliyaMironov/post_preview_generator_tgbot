@@ -219,6 +219,7 @@ class ImageGenerator:
     def generate_ai_only(self, ai_image: np.ndarray) -> BytesIO:
         """
         Генерация превью из чистого AI-изображения без текста
+        с правильным масштабированием (crop to fit)
 
         Args:
             ai_image: AI-сгенерированное изображение (numpy array)
@@ -226,8 +227,37 @@ class ImageGenerator:
         Returns:
             BytesIO с PNG изображением
         """
-        # Масштабируем изображение до нужного размера
-        cv_img = cv2.resize(ai_image, (self.width, self.height), interpolation=cv2.INTER_LANCZOS4)
+        # Получаем размеры исходного изображения
+        img_height, img_width = ai_image.shape[:2]
+
+        # Вычисляем соотношения сторон
+        target_ratio = self.width / self.height  # 1280/640 = 2.0
+        img_ratio = img_width / img_height
+
+        # Масштабируем так, чтобы заполнить целевой размер
+        if img_ratio > target_ratio:
+            # Изображение шире целевого - масштабируем по высоте
+            new_height = self.height
+            new_width = int(img_width * (self.height / img_height))
+        else:
+            # Изображение уже или равно целевому - масштабируем по ширине
+            new_width = self.width
+            new_height = int(img_height * (self.width / img_width))
+
+        # Масштабируем изображение
+        resized = cv2.resize(ai_image, (new_width, new_height), interpolation=cv2.INTER_LANCZOS4)
+
+        # Обрезаем до нужного размера (центрируем)
+        if new_width > self.width:
+            # Обрезаем по ширине
+            x_offset = (new_width - self.width) // 2
+            cv_img = resized[:, x_offset:x_offset + self.width]
+        elif new_height > self.height:
+            # Обрезаем по высоте
+            y_offset = (new_height - self.height) // 2
+            cv_img = resized[y_offset:y_offset + self.height, :]
+        else:
+            cv_img = resized
 
         # Конвертируем в PIL
         pil_img = self._cv2_to_pil(cv_img)

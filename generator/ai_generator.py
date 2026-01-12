@@ -15,7 +15,9 @@ class AIImageGenerator:
         self.api_key = api_key
         self.api_url = api_url
         # Используем google/gemini-2.5-flash-image - проверенная рабочая модель
-        self.model = "google/gemini-2.5-flash-image"
+        # self.model = "google/gemini-2.5-flash-image"
+        self.model = "google/gemini-3-pro-image-preview"
+        # self.model = "gemini-3-pro-image"
 
     def generate_illustration(self, prompt: str, size: str = "1024x1024") -> Optional[np.ndarray]:
         """
@@ -47,7 +49,7 @@ class AIImageGenerator:
                     ],
                     "max_tokens": 4096
                 },
-                timeout=90
+                timeout=180
             )
 
             response.raise_for_status()
